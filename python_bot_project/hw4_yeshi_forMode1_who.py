@@ -55,41 +55,6 @@ def Initialize():
     stats[0] = f'Bot#01-{infos.idx_me}'
 
 
-def print_plain() :
-    plane_array = [
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ]
-    center = [len(plane_array) / 2, len(plane_array[0]) / 2]
-    i = -5
-    while i <= 5 :
-        j = -5
-        while j <= 5 :
-            tmp = infos.publicPlane[i, j]
-            plane_array[i + 5][j + 5] = tmp.r_toOccupy
-            if (tmp.r_toBuildBase == 0) :
-                plane_array[i+5][j+5] = 'B'
-            if (tmp.r_toBuildTeleporter == 0) :
-                plane_array[i+5][j+5] = 'T'
-            if (tmp.count_characters > 0) :
-                plane_array[i+5][j+5] = 'P'
-            j += 1
-        i += 1
-    plane_array[infos.pos_me[0] + 5][infos.pos_me[1] + 5] = '@'
-    return plane_array
-
-
-print_plane_var = []
-
 def MakeDecision():
     '''
     예시 캐릭터 설명
@@ -125,8 +90,6 @@ def MakeDecision():
     return ret_move, dir_down
     '''
     
-    #print_plane_var.append(print_plain())
-    
     # 수집하는 것이 목표였다면...
     if data.state == 0:
         # 수집할 새 칸을 찾아야 한다면...
@@ -146,7 +109,7 @@ def MakeDecision():
             # 3단 콤보-1-2. 자원이 있는 칸을 찾아 기록해 둘 때까지...
             while data.pos == None:
                 # 3단 콤보-2-1. 해당 거리만큼 떨어진 칸들(4 * distance개) 중 가장 오른쪽에 있는 칸부터 시계방향으로 체크
-                count_candidates = 4 * distance # 검색할 개수
+                count_candidates = 4 * distance
                 x_candidate = x_center + distance
                 y_candidate = y_center
                 count_checked = 0
@@ -247,6 +210,41 @@ def MakeDecision():
         return ret_move, dir_up
     
     return ret_move, dir_down
+
+
+def print_plain() :
+    plane_array = [
+    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ]
+    center = [len(plane_array) / 2, len(plane_array[0]) / 2]
+    i = -5
+    while i <= 5 :
+        j = -5
+        while j <= 5 :
+            tmp = infos.public_Plane[(i, j)]
+            if (tmp.toOccupy == 0) :
+                plane_array[i,j] = 'N'
+            elif (tmp.toBuild == 0) :
+                plane_array[i,j] = 'T'
+            elif (tmp.toBuildTeleporter == 0) :
+                plane_array[i,j] = 'O'
+            if (tmp.count_characters > 0) :
+                plane_array[i,j] = 'P'
+            plane_array[infos.pos_me[0] + 5, infos.pos_me[1] + 5] = '@'
+    for i in plane_array :
+        print(i)
+
+
 
 
 # ☆ 이 아래에 있는 if문은 여러분이 이 파일 붙잡고 F5 눌렀을 때도 테스트를 진행해 볼 수 있도록 적어 두었어요

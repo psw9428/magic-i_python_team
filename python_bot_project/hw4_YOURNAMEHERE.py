@@ -59,12 +59,26 @@ def Initialize():
     # 캐릭터 이름을 변경하고 싶은 경우 여기서 변경할 수 있어요.
     # 뭐 보통은 굳이 그럴 필요는 없기는 해요
     pass
+def manhattan_distance(point1, point2):
+        x1, y1 = point1
+        x2, y2 = point2
+        distance = abs(x2 - x1) + abs(y2 - y1)
+        return distance
+    
+def closestPoint(arr, fromPoint):
+    closest = None
+    min_distance = float('inf')
 
+    for point in arr:
+        distance = manhattan_distance(point, fromPoint)
+        if distance < min_distance:
+            min_distance = distance
+            closest = point
+    return closest
 
 # 내 캐릭터의 다음 행동을 결정하기 위한 의사 결정을 수행합니다.
 def MakeDecision():
-    # 지금은 일부러 요상한 값을 return하도록 만들었어요
-    return 123456
+    #여기서부터 시작
 
     
 

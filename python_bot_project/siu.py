@@ -1,15 +1,5 @@
-'''
-공학도를위한창의적컴퓨팅 과제#4
 
-튜토리얼 시나리오#1의 목표를 달성하기 위한 의사 결정 흐름을 갖춘 예시 캐릭터입니다.
-
-- 여러분이 자신의 캐릭터 모듈을 만들 때 참고할 만한 코드가 적혀 있는 곳에는
-  주석으로, NOTE 를 적어 표시해 두었어요.
-'''
-
-# 예시 캐릭터들의 이름은 Initialize()에서 infos.idx_me 값을 바탕으로 다시 정해요.
-# 그래서 예시 캐릭터 모듈을 여러 개 복붙해 만들어서 각각 import해도 이름이 겹치지 않을 거예요.
-stats = ['', 10, 10, 10]
+stats = ['siu', 10, 10, 10]
 
 ret_gather = 0
 ret_move = 1
@@ -27,9 +17,13 @@ dir_left = 1
 dir_right = 2
 dir_down = 3
 
-requestcode_gather = 0
-requestcode_build_base = 1
-requestcode_build_teleporter = 2
+gather_code = 0
+build_base_code = 1
+build_teleporter_code = 2
+
+find_build = 0
+find_base = 1
+find_teleporter = 2
 
 data = 3
 infos = 3
@@ -47,48 +41,9 @@ def Initialize():
 
     - pos: 위에서 언급한 '지정한 칸'의 좌표를 담아 둠. None을 담아 두는 경우 (수집할) 새 칸을 찾아야 함
     '''
-
-    # 일단 게임을 시작하면 중심 칸에서 수집하는 것을 목표로 행동할 예정
-    data.state = 0    
+    data.state = 0
     data.pos = (0, 0)
 
-    stats[0] = f'Bot#01-{infos.idx_me}'
-
-
-def print_plain() :
-    plane_array = [
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
-    ]
-    center = [len(plane_array) / 2, len(plane_array[0]) / 2]
-    i = -5
-    while i <= 5 :
-        j = -5
-        while j <= 5 :
-            tmp = infos.publicPlane[i, j]
-            plane_array[i + 5][j + 5] = tmp.r_toOccupy
-            if (tmp.r_toBuildBase == 0) :
-                plane_array[i+5][j+5] = 'B'
-            if (tmp.r_toBuildTeleporter == 0) :
-                plane_array[i+5][j+5] = 'T'
-            if (tmp.count_characters > 0) :
-                plane_array[i+5][j+5] = 'P'
-            j += 1
-        i += 1
-    plane_array[infos.pos_me[0] + 5][infos.pos_me[1] + 5] = '@'
-    return plane_array
-
-
-print_plane_var = []
 
 def MakeDecision():
     '''
@@ -125,8 +80,6 @@ def MakeDecision():
     return ret_move, dir_down
     '''
     
-    #print_plane_var.append(print_plain())
-    
     # 수집하는 것이 목표였다면...
     if data.state == 0:
         # 수집할 새 칸을 찾아야 한다면...
@@ -146,7 +99,7 @@ def MakeDecision():
             # 3단 콤보-1-2. 자원이 있는 칸을 찾아 기록해 둘 때까지...
             while data.pos == None:
                 # 3단 콤보-2-1. 해당 거리만큼 떨어진 칸들(4 * distance개) 중 가장 오른쪽에 있는 칸부터 시계방향으로 체크
-                count_candidates = 4 * distance # 검색할 개수
+                count_candidates = 4 * distance
                 x_candidate = x_center + distance
                 y_candidate = y_center
                 count_checked = 0
@@ -160,27 +113,6 @@ def MakeDecision():
                     # 3단 콤보-2-3. 다음에 체크할 칸 좌표 계산
                     count_checked = count_checked + 1
 
-                    '''
-                    현재 목표상, distance == 2일 때를 보면...
-                    __6__
-                    _5_7_
-                    4_C_0
-                    _3_1_
-                    __2__
-                    ...와 같은 순서로 체크하게 돼요.
-
-                    각각 x거리와 y거리를 나열해 보면서,
-                    count_checked 값에 따라 x거리와 y거리를 계산하는 수식을 아래와 같이 세워둘 수 있어요(다른 방법도 많음)
-                    c p o  x  y
-                    0 0 0 +2  0
-                    1 0 1 +1 +1
-                    2 1 0  0 +2
-                    3 1 1 -1 +1
-                    4 2 0 -2  0
-                    5 2 1 -1 -1
-                    6 3 0  0 -2
-                    7 3 1 +1 -1
-                    '''
                     phase = count_checked // distance
                     offset = count_checked % distance
                     # distance == 2일 때 [+1, +1, +1, +1, -1, -1, -1, -1]과 [2, 1, 0 -1, 2, 1, 0 -1]을 각 자리별로 곱하는 셈이 돼요
@@ -222,31 +154,84 @@ def MakeDecision():
             return ret_deposit
 
     # 이동
-    
-    # 뺄셈을 해서 지정한 칸과 현재 칸 사이의 x축 방향 거리와 y축 방향 거리(이하 x거리, y거리) 계산
-    # NOTE 내 위치와 목적지 사이의 거리를 잴 때는 
-    #      내 위치를 원점으로 두고 계산하도록 신경써 두는 것이 편할 거예요
-    #
-    # NOTE x좌표는 [0], y좌표는 [1]에 담겨 있다는 점,
-    #      수학 동네와 다르게 컴퓨터 동네의 2D 좌표계에서 y축은 아래 방향이 양수 방향이라는 점도 기억해 둬요
     x_distance = data.pos[0] - infos.pos_me[0]
     y_distance = data.pos[1] - infos.pos_me[1]
 
-    # |x거리| > |y거리| 라면...
-    #
-    # NOTE built-in 함수 abs()를 사용하면 간편하게 어떤 숫자 형식(bool 형식 제외 -> 각각 0, 1로 간주) 값에 대한 절대값을 구할 수 있어요
     if abs(x_distance) > abs(y_distance):
-        # 지정한 칸이 더 왼쪽에 있다면...
         if x_distance < 0:
             return ret_move, dir_left
-        
         return ret_move, dir_right
 
-    # (|x거리| <= |y거리| 면서) 지정한 칸이 더 위에 있다면...
     if y_distance < 0:
-        return ret_move, dir_up
-    
+        return ret_move, dir_up    
     return ret_move, dir_down
+
+def find_neerest(value) :
+    if value == 0 :
+        distance = 0
+        while distance < 5 :
+            count_candidate = distance * 4
+            x = infos.pos_me[0] + distance
+            y = infos.pos_me[1]
+            count_checked = 0
+            while count_checked < count_candidate :
+                # 해당 칸에 자원이 있다면 기록
+                if infos.publicPlane[x,y].toBuildBase < get_original_base() or infos.publicPlane[x,y].toBuildTeleporter < get_original_teleport(x,y) :
+                    return (x,y)
+
+                # 3단 콤보-2-3. 다음에 체크할 칸 좌표 계산
+                count_checked = count_checked + 1
+                phase = count_checked // distance
+                offset = count_checked % distance
+                # distance == 2일 때 [+1, +1, +1, +1, -1, -1, -1, -1]과 [2, 1, 0 -1, 2, 1, 0 -1]을 각 자리별로 곱하는 셈이 돼요
+                x = infos.pos_me[0] + (1 - (phase     & 2)) * (distance * (1 -  phase      % 2) - offset)
+                # x버전 수식을 들고 와서 phase를 phase - 1로 고쳐 적었어요
+                # (수식 1 - (phase - 1) % 2는 수식 phase % 2로 축약 가능하기는 해요)
+                y = infos.pos_me[1] + (1 - (phase - 1 & 2)) * (distance * (1 - (phase - 1) % 2) - offset)
+
+            # 3단 콤보-1-3. 한 칸 더 멀리 있는 칸들을 체크하기 시작
+            distance = distance + 1
+    else :
+        distance = 0
+        while distance < 5 :
+            count_candidate = distance * 4
+            x = infos.pos_me[0] + distance
+            y = infos.pos_me[1]
+            count_checked = 0
+            while count_checked < count_candidate :
+                # 해당 칸에 자원이 있다면 기록
+                if infos.publicPlane[x,y].toBuildBase == 0 and value == 1 :
+                    return (x,y)
+                if infos.publicPlane[x,y].toBuildTeleporter == 0 and value == 2 :
+                    return (x,y)
+
+                # 3단 콤보-2-3. 다음에 체크할 칸 좌표 계산
+                count_checked = count_checked + 1
+                phase = count_checked // distance
+                offset = count_checked % distance
+                # distance == 2일 때 [+1, +1, +1, +1, -1, -1, -1, -1]과 [2, 1, 0 -1, 2, 1, 0 -1]을 각 자리별로 곱하는 셈이 돼요
+                x = infos.pos_me[0] + (1 - (phase     & 2)) * (distance * (1 -  phase      % 2) - offset)
+                # x버전 수식을 들고 와서 phase를 phase - 1로 고쳐 적었어요
+                # (수식 1 - (phase - 1) % 2는 수식 phase % 2로 축약 가능하기는 해요)
+                y = infos.pos_me[1] + (1 - (phase - 1 & 2)) * (distance * (1 - (phase - 1) % 2) - offset)
+
+            # 3단 콤보-1-3. 한 칸 더 멀리 있는 칸들을 체크하기 시작
+            distance = distance + 1
+    return None
+        
+            
+            
+        
+def get_original_resource(x, y) :
+    return 5 + ((abs(x) + abs(y)) >> 5)
+def get_original_occupy(x, y) :
+    return int(25 * 1.6 ** ((abs(x) + abs(y))/512))
+def get_original_base(x, y) :
+    return int(50 * 6.0 ** ((abs(x) + abs(y))/512))
+def get_original_teleport(x, y) :
+    return int(100 * 1.5 ** ((abs(x) + abs(y))/512))
+
+
 
 
 # ☆ 이 아래에 있는 if문은 여러분이 이 파일 붙잡고 F5 눌렀을 때도 테스트를 진행해 볼 수 있도록 적어 두었어요
