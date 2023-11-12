@@ -7,7 +7,7 @@
 # 내 캐릭터의 이름과 힘, 민첩, 체력 능력치를 지정합니다.
 # - 이름은 자유롭게 지정할 수 있어요(동명이인이 나오지 않도록 개성 있는 이름을 골라 주세요)
 # - 능력치는 모두 0 이상의 int 형식 값이어야 하며, 세 능력치의 합은 30이어야 해요
-stats = ['MJY', 15, 5, 10]
+stats = ['MJY', 10, 10, 10]
 
 
 
@@ -63,7 +63,7 @@ def Initialize():
 plane_info =[]
 def print_plain() :
     plane_array = []
-    size = 41
+    size = 51
     half = size//2
     for i in range(0, size) :
         a = []
@@ -111,7 +111,6 @@ def closestPoint(arr, fromPoint):
 # 내 캐릭터의 다음 행동을 결정하기 위한 의사 결정을 수행합니다.
 def MakeDecision():
     plane_info.append(print_plain())
-
     data.state = 0
     data.pos = None
     objective = None
@@ -243,72 +242,64 @@ def MakeDecision():
     # 점유하는 것이 목표였다면...
     if data.state == 1:
         # 현재 칸이 점유되어 있지 않다면...
-        if objective == None:
-            if infos.publicPlane[infos.pos_me].r_toOccupy > 0:
-                # 다음 번 행동부터 인출을 목표로 하기로 기록해 둠
-                objective = infos.pos_me
-                data.state = 0
-                # 다음 번 의사 결정을 수행할 때 새 칸을 찾아야 한다고 기록해 둠
-                data.pos = None
-                if infos.pos_me.r_toOccupy <= infos.r_carrying:
-                    objective = None
-                return ret_occupy
-            else:
-                x_center = 0
-                y_center = 0
-                distance = 1
-
-                # 3단 콤보-1-2. objective 후보 칸을 찾아 기록해 둘 때까지...
-                while objective == None:
-                    # 3단 콤보-2-1. 해당 거리만큼 떨어진 칸들(4 * distance개) 중 가장 오른쪽에 있는 칸부터 시계방향으로 체크
-                    count_candidates = 4 * distance
-                    x_candidate = x_center + distance
-                    y_candidate = y_center
-                    count_checked = 0
-
-                    # 3단 콤보-2-2. 모든 칸들을 다 체크하거나 자원이 있는 칸을 찾아 기록해 둘 때까지...
-                    while count_checked < count_candidates and data.pos == None:
-                        # 해당 칸에 자원이 있다면 기록
-                        if infos.myPlane[x_candidate, y_candidate].r_toOccupy > 0:
-                            objective = (x_candidate, y_candidate)
-
-                        # 3단 콤보-2-3. 다음에 체크할 칸 좌표 계산
-                        count_checked = count_checked + 1
-
-                        '''
-                        현재 목표상, distance == 2일 때를 보면...
-                        __6__
-                        _5_7_
-                        4_C_0
-                        _3_1_
-                        __2__
-                        ...와 같은 순서로 체크하게 돼요.
-
-                        각각 x거리와 y거리를 나열해 보면서,
-                        count_checked 값에 따라 x거리와 y거리를 계산하는 수식을 아래와 같이 세워둘 수 있어요(다른 방법도 많음)
-                        c p o  x  y
-                        0 0 0 +2  0
-                        1 0 1 +1 +1
-                        2 1 0  0 +2
-                        3 1 1 -1 +1
-                        4 2 0 -2  0
-                        5 2 1 -1 -1
-                        6 3 0  0 -2
-                        7 3 1 +1 -1
-                        '''
-                        phase = count_checked // distance
-                        offset = count_checked % distance
-                        # distance == 2일 때 [+1, +1, +1, +1, -1, -1, -1, -1]과 [2, 1, 0 -1, 2, 1, 0 -1]을 각 자리별로 곱하는 셈이 돼요
-                        x_candidate = x_center + (1 - (phase     & 2)) * (distance * (1 -  phase      % 2) - offset)
-                        # x버전 수식을 들고 와서 phase를 phase - 1로 고쳐 적었어요
-                        # (수식 1 - (phase - 1) % 2는 수식 phase % 2로 축약 가능하기는 해요)
-                        y_candidate = y_center + (1 - (phase - 1 & 2)) * (distance * (1 - (phase - 1) % 2) - offset)
-
-                    # 3단 콤보-1-3. 한 칸 더 멀리 있는 칸들을 체크하기 시작
-                    distance = distance + 1
-                    data.pos = objective
+        if infos.publicPlane[infos.pos_me].r_toOccupy > 0:
+            # 다음 번 행동부터 인출을 목표로 하기로 기록해 둠
+            objective = infos.pos_me
+            data.state = 0
+            # 다음 번 의사 결정을 수행할 때 새 칸을 찾아야 한다고 기록해 둠
+            data.pos = None
+            if infos.pos_me.r_toOccupy <= infos.r_carrying:
+                objective = None
+            return ret_occupy
         else:
-            
+            x_center = 0
+            y_center = 0
+            distance = 1
+            # 3단 콤보-1-2. objective 후보 칸을 찾아 기록해 둘 때까지...
+            while objective == None:
+                # 3단 콤보-2-1. 해당 거리만큼 떨어진 칸들(4 * distance개) 중 가장 오른쪽에 있는 칸부터 시계방향으로 체크
+                count_candidates = 4 * distance
+                x_candidate = x_center + distance
+                y_candidate = y_center
+                count_checked = 0
+                # 3단 콤보-2-2. 모든 칸들을 다 체크하거나 자원이 있는 칸을 찾아 기록해 둘 때까지...
+                while count_checked < count_candidates and data.pos == None:
+                    # 해당 칸에 자원이 있다면 기록
+                    if infos.myPlane[x_candidate, y_candidate].r_toOccupy > 0:
+                        objective = (x_candidate, y_candidate)
+                    # 3단 콤보-2-3. 다음에 체크할 칸 좌표 계산
+                    count_checked = count_checked + 1
+                    '''
+                    현재 목표상, distance == 2일 때를 보면...
+                    __6__
+                    _5_7_
+                    4_C_0
+                    _3_1_
+                    __2__
+                    ...와 같은 순서로 체크하게 돼요.
+                    각각 x거리와 y거리를 나열해 보면서,
+                    count_checked 값에 따라 x거리와 y거리를 계산하는 수식을 아래와 같이 세워둘 수 있어요(다른 방법도 많음)
+                    c p o  x  y
+                    0 0 0 +2  0
+                    1 0 1 +1 +1
+                    2 1 0  0 +2
+                    3 1 1 -1 +1
+                    4 2 0 -2  0
+                    5 2 1 -1 -1
+                    6 3 0  0 -2
+                    7 3 1 +1 -1
+                    '''
+                    phase = count_checked // distance
+                    offset = count_checked % distance
+                    # distance == 2일 때 [+1, +1, +1, +1, -1, -1, -1, -1]과 [2, 1, 0 -1, 2, 1, 0 -1]을 각 자리별로 곱하는 셈이 돼요
+                    x_candidate = x_center + (1 - (phase     & 2)) * (distance * (1 -  phase      % 2) - offset)
+                    # x버전 수식을 들고 와서 phase를 phase - 1로 고쳐 적었어요
+                    # (수식 1 - (phase - 1) % 2는 수식 phase % 2로 축약 가능하기는 해요)
+                    y_candidate = y_center + (1 - (phase - 1 & 2)) * (distance * (1 - (phase - 1) % 2) - offset)
+                # 3단 콤보-1-3. 한 칸 더 멀리 있는 칸들을 체크하기 시작
+                distance = distance + 1
+            data.pos = objective      
+        
     # 이동
     
     # 뺄셈을 해서 지정한 칸과 현재 칸 사이의 x축 방향 거리와 y축 방향 거리(이하 x거리, y거리) 계산

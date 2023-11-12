@@ -52,7 +52,7 @@ mode = 2
 #   그렇기는 하지만 어떤 예시 캐릭터들은 자신이 담당하는 시나리오의 목표를 달성하기 위해 구성되어 있으니
 #   다른 mode에서는 정상적으로 동작하지 않을 수 있습니다
 # TODO 예시 캐릭터는 나중에 더 추가될 수 있어요
-add_yeshi_characters_forScenario = True
+add_yeshi_characters_forScenario = False
 
 
 # 시나리오#4 에서 사용하는, 초기 텔레포터 위치를 결정하기 위한 값을 지정합니다.
