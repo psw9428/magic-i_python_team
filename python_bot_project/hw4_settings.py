@@ -44,7 +44,7 @@ Version 0.5.4
 #           요청을 게시하려면 내 캐릭터가 해당 칸 위에 있어야 하므로, 자꾸 테스트가 끝나지 않는다면 내 캐릭터가 먼저 달려가서 빠르게 요청을 게시할 수 있도록 만들어 봐요
 #
 # TODO 향후 몇 가지 모드들이 더 추가될 수 있어요
-mode = 2
+mode = 0
 
 
 # 각 시나리오에 대해 미리 만들어 둔 예시 캐릭터들을 자동으로 추가할 것인지 여부를 지정합니다.
@@ -52,7 +52,7 @@ mode = 2
 #   그렇기는 하지만 어떤 예시 캐릭터들은 자신이 담당하는 시나리오의 목표를 달성하기 위해 구성되어 있으니
 #   다른 mode에서는 정상적으로 동작하지 않을 수 있습니다
 # TODO 예시 캐릭터는 나중에 더 추가될 수 있어요
-add_yeshi_characters_forScenario = False
+add_yeshi_characters_forScenario = True
 
 
 # 시나리오#4 에서 사용하는, 초기 텔레포터 위치를 결정하기 위한 값을 지정합니다.
@@ -75,7 +75,6 @@ pause_after_error = True
 # 주의: 동일한 모듈을 여러 번 import하면 안 돼요. 내 캐릭터의 사본을 함께 추가하고 싶다면 .py 파일 째로 복사해 놓고 각각 따로 import해 주세요.
 #import hw4_ctrlable
 #import hw4_yeshi_forMode1
-import Jun
 
 # (여기 있는 if문 내용물은 지우지 말고, 특정 캐릭터만 잠시 빼 두고 싶다면 주석으로 막아 두는 것을 권장해요)
 # 튜토리얼 시나리오에 대한 예시 캐릭터들을 추가하는 Code예요.
@@ -85,13 +84,14 @@ import Jun
 if add_yeshi_characters_forScenario:
     if mode == 1:
         import hw4_yeshi_forMode1
-    if mode == 2:
+    if mode == 0:
         # 수집가 셋 + 작업자 하나 조합
         # (파일 이름은 서로 다르지만 수집가 셋 모두 의사 결정 흐름이 동일해요)
         import hw4_yeshi_forMode1
         import hw4_yeshi_forMode2_gatherer_1
         import hw4_yeshi_forMode2_gatherer_2
         import hw4_yeshi_forMode2_worker
+        import siu
     if mode == 3:
         # 효율이 몹시 낮은 예시 캐릭터 둘을 마련해 두었어요.
         # 무작정 (4, 4)까지 이동한 다음 그 근처에서 직접 자원을 수집하며 건설에 참여해요
@@ -256,7 +256,7 @@ verify_settings()
 
 
 def print_plane_log() :
-    for i in Jun.plane_info :
+    for i in siu.plane_info :
         print('===============================================')
         for j in i :
             for k in j :
