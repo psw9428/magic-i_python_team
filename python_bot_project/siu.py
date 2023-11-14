@@ -17,13 +17,10 @@ dir_left = 1
 dir_right = 2
 dir_down = 3
 
-gather_code = 0
-build_base_code = 1
-build_teleporter_code = 2
-
-find_build = 0
-find_base = 1
-find_teleporter = 2
+gather = 0
+deposit = 1
+build_base = 2
+build_teleporter = 3
 
 data = 3
 infos = 3
