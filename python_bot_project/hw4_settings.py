@@ -75,6 +75,7 @@ pause_after_error = True
 # 주의: 동일한 모듈을 여러 번 import하면 안 돼요. 내 캐릭터의 사본을 함께 추가하고 싶다면 .py 파일 째로 복사해 놓고 각각 따로 import해 주세요.
 #import hw4_ctrlable
 #import hw4_yeshi_forMode1
+import hw4_module
 
 # (여기 있는 if문 내용물은 지우지 말고, 특정 캐릭터만 잠시 빼 두고 싶다면 주석으로 막아 두는 것을 권장해요)
 # 튜토리얼 시나리오에 대한 예시 캐릭터들을 추가하는 Code예요.

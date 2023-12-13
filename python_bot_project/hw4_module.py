@@ -56,14 +56,6 @@ infos = 3
 # 게임을 시작하기 직전에 한 번 호출되는 함수입니다.
 # data에 적절한 Data를 담아 두기 위한 문장들을 적어둘 수 있습니다.
 def Initialize():
-    global usingbase 
-    usingbase = infos.pos_bases[0]
-    global BaseTooBarran
-    BaseTooBarran = False
-    global Barran
-    global Barrancount
-    Barrencount = 0
-
     # 캐릭터 이름을 변경하고 싶은 경우 여기서 변경할 수 있어요.
     # 뭐 보통은 굳이 그럴 필요는 없기는 해요
     pass
@@ -146,48 +138,6 @@ def MakeDecision():
                 # 3단 콤보-2-2. 모든 칸들을 다 체크하거나 자원이 있는 칸을 찾아 기록해 둘 때까지...
                 while count_checked < count_candidates and data.pos == None:
                     # 해당 칸에 자원이 있다면 기록
-                    if infos.myPlane[x_candidate, y_candidate] >= infos.max_r_carrying:
-                        data.pos = (x_candidate, y_candidate)
-
-                    # 3단 콤보-2-3. 다음에 체크할 칸 좌표 계산
-                    count_checked = count_checked + 1
-
-                    '''
-                    현재 목표상, distance == 2일 때를 보면...
-                    __6__
-                    _5_7_
-                    4_C_0
-                    _3_1_
-                    __2__
-                    ...와 같은 순서로 체크하게 돼요.
-
-                    각각 x거리와 y거리를 나열해 보면서,
-                    count_checked 값에 따라 x거리와 y거리를 계산하는 수식을 아래와 같이 세워둘 수 있어요(다른 방법도 많음)
-                    c p o  x  y
-                    0 0 0 +2  0
-                    1 0 1 +1 +1
-                    2 1 0  0 +2
-                    3 1 1 -1 +1
-                    4 2 0 -2  0
-                    5 2 1 -1 -1
-                    6 3 0  0 -2
-                    7 3 1 +1 -1
-                    '''
-                    phase = count_checked // distance
-                    offset = count_checked % distance
-                    # distance == 2일 때 [+1, +1, +1, +1, -1, -1, -1, -1]과 [2, 1, 0 -1, 2, 1, 0 -1]을 각 자리별로 곱하는 셈이 돼요
-                    x_candidate = x_center + (1 - (phase     & 2)) * (distance * (1 -  phase      % 2) - offset)
-                    # x버전 수식을 들고 와서 phase를 phase - 1로 고쳐 적었어요
-                    # (수식 1 - (phase - 1) % 2는 수식 phase % 2로 축약 가능하기는 해요)
-                    y_candidate = y_center + (1 - (phase - 1 & 2)) * (distance * (1 - (phase - 1) % 2) - offset)
-
-                count_candidates = 4 * distance
-                x_candidate = x_center + distance
-                y_candidate = y_center
-                count_checked = 0
-
-                while count_checked < count_candidates and data.pos == None:
-                    # 해당 칸에 자원이 있다면 기록
                     if infos.myPlane[x_candidate, y_candidate] > 0:
                         data.pos = (x_candidate, y_candidate)
 
@@ -237,35 +187,13 @@ def MakeDecision():
                 # NOTE 중심 칸이 아닌 다른 칸의 거점에 수납하고 싶다면 여기를 고치면 돼요.
                 #      어느 거점으로 향할 것인지는, 위에 적혀 있는 '수집할 새 칸을 찾는 Code'를 참고해서 만들 수도 있지만,
                 #      미리 infos.pos_bases에 거점이 있는 좌표 목록을 담아 두었으니, 이걸 털어보는 것을 추천해요
-                data.pos = usingbase
+                data.pos = (0, 0)
             # 이번에 수집해도 손이 가득 차지 않는다면...
             if infos.r_carrying + infos.myPlane[infos.pos_me] < infos.max_r_carrying:
                 # 다음 번 의사 결정을 수행할 때 새 칸을 찾아야 한다고 기록해 둠
                 data.pos = None
             
             return ret_gather
-
-    if data.state == 2:
-        #usingbase를 리셋하는 상태 
-        #BaseTooBarren = True 일 때 리셋
-        if BaseTooBarran == True:
-            Barran[Barrancount] = usingbase
-            Barrancount = Barrancount + 1
-            #다신 이 버려진 곳으로 오지 않도록... 특수한 상황이 아니라면
-            while(1):
-                for i in Barran:
-                    if i == closestPoint(infos.pos_base, infos.pos_me):
-                        continue
-                    # 언제까지 제출이라고?
-                    # 몰루? 그치? 난 근데 수집가중 좀 똑똑한 애로 만들어보려고
-                    
-            usingbase = closestPoint(infos.pos_base, infos.pos_me)
-            BaseTooBarran == False
-            data.pos = usingbase
-        #usingbase로 이동
-        if infos.pos_me == usingbase:
-            data.state = 0
-        
 
     # 수납하는 것이 목표였다면...
     if data.state == 1:
