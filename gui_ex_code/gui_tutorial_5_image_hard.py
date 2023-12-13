@@ -11,12 +11,15 @@
 
 import gui_core as gui
 import random
+import os
 
 
 w = gui.Window()
+cwd = str(os.getcwd()).replace('\\', '/') + '/'
 
 
 def initialize(timestamp):
+    
     w.data.width_image = 52
 
     w.data.filenames = ['star0.png',
@@ -44,7 +47,8 @@ def initialize(timestamp):
         number = w.newImage(
             pos_x,
             pos_y,
-            w.data.filenames[idx_filenames])
+            cwd + w.data.filenames[idx_filenames]
+            )
 
         # 이미 등장한 적 있는 list.append()에 대한 정식 설명은 다음 시간에 구경해 볼께요.
         # 일단 아래 함수 호출식은 objs에 담긴 list의 맨 뒤에 한 칸을 추가하고 그 자리에 인수 값을 담아요

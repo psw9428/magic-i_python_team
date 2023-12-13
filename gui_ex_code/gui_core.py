@@ -47,39 +47,39 @@ class Window:
             self.initialize(time.perf_counter())
 
             # ☆ w.stop()이 호출될 때까지 반복 실행
-            while not self.internals얘는안봐도돼요.isClosing:
+            while not self.internals_neednolook.isClosing:
                 # ☆ 이번 프레임 시작 시각 기록
                 time_startFrame = time.perf_counter()
 
                 # ☆ 이제까지 들어온 입력 반영(이후로 들어오는 입력들은 다음 프레임 시작할 때 반영됨)
-                self.internals얘는안봐도돼요.acceptInputs()
+                self.internals_neednolook.acceptInputs()
 
                 # ☆ w.update() 호출
                 self.update(time_startFrame)
 
                 # ☆ w.update() 내용물 실행 도중 w.stop()이 호출되었었다면 화면 갱신을 하지 않고 바로 프레임 종료
-                if self.internals얘는안봐도돼요.isClosing:
+                if self.internals_neednolook.isClosing:
                     break
 
                 # ☆ 변경된 Data를 ObjectInfo들에 반영 + 화면 갱신
-                self.internals얘는안봐도돼요.updateObjectInfos()
-                self.internals얘는안봐도돼요.master.update()
+                self.internals_neednolook.updateObjectInfos()
+                self.internals_neednolook.master.update()
                 time_endFrame = time.perf_counter()
 
                 # ☆ 다음 프레임 시작 시각이 올 때까지 화면 갱신만 재차 진행
                 while time_endFrame - time_startFrame < self.interval:
-                    self.internals얘는안봐도돼요.master.update()
+                    self.internals_neednolook.master.update()
                     time_endFrame = time.perf_counter()
                     
         except Exception as e:
             # ☆ 오류 발생시 (창이 살아 있다면) 창 제목에 오류 이름 표시 -> interactive에 오류 내용을 출력하도록 뒷처리 진행
-            self.setTitle('[' + type(e).__name__ + ' 발생으로 중단됨] - ' + self.internals얘는안봐도돼요.master.title())
+            self.setTitle('[' + type(e).__name__ + ' 발생으로 중단됨] - ' + self.internals_neednolook.master.title())
             print('창을 닫으려면 interactive에서 Ctrl + F6을 누르세요')
             raise e
         
         else:
             # ☆ w.stop()을 호출하여 정상적으로 반복 실행을 중단했을 때만 자동으로 창을 닫음(오류 나거나 했을 때는 닫지 않음)
-            self.internals얘는안봐도돼요.master.destroy()
+            self.internals_neednolook.master.destroy()
             
  
 
@@ -91,7 +91,7 @@ class Window:
 
         # ☆ 이번 프레임 종료 시점에 실제 작업을 할 수 있도록 표시만 해 둠.
         #    실제 작업은 Window.start() 정의 안 while문의 else부분에서 함
-        self.internals얘는안봐도돼요.isClosing = True
+        self.internals_neednolook.isClosing = True
     
 
 
@@ -106,7 +106,7 @@ class Window:
         '''
 
         # ☆ 창 제목은 단일 Data니 그냥 즉시 변경
-        self.internals얘는안봐도돼요.master.title(new_title)
+        self.internals_neednolook.master.title(new_title)
 
 
     def moveWindow(self, new_x, new_y):
@@ -115,18 +115,18 @@ class Window:
 
         new_x, new_y: 창의 새 좌표(모니터 화면 좌상단 점 기준)
         '''
-        self.offset_x = new_x - self.internals얘는안봐도돼요.window_position_x
-        self.offset_y = new_y - self.internals얘는안봐도돼요.window_position_y
+        self.offset_x = new_x - self.internals_neednolook.window_position_x
+        self.offset_y = new_y - self.internals_neednolook.window_position_y
 
         # ☆ 내부 Data는 즉시 갱신
-        self.internals얘는안봐도돼요.window_position_x = new_x
-        self.internals얘는안봐도돼요.window_position_y = new_y
+        self.internals_neednolook.window_position_x = new_x
+        self.internals_neednolook.window_position_y = new_y
 
         self.mouse_position_x -= self.offset_x
         self.mouse_position_y -= self.offset_y
 
         # ☆ 실제 변경 작업은 w.update() 종료 이후 시점에 함
-        self.internals얘는안봐도돼요.isWindowMoved = True
+        self.internals_neednolook.isWindowMoved = True
         
 
 
@@ -139,7 +139,7 @@ class Window:
         return값: 게임 화면 자체의 x, y 값
         '''
 
-        return self.internals얘는안봐도돼요.window_position_x, self.internals얘는안봐도돼요.window_position_y
+        return self.internals_neednolook.window_position_x, self.internals_neednolook.window_position_y
 
 
 
@@ -179,11 +179,11 @@ class Window:
         if outline_thickness < 0:
             outline_thickness = 0
 
-        number = self.internals얘는안봐도돼요.canvas.create_rectangle(x, y, x + width, y + height, fill=fill_color, width=outline_thickness, outline=outline_color, state=tkinter.NORMAL if isVisible else tkinter.HIDDEN)
-        newInfo = self.internals얘는안봐도돼요.RectangleInfo(number, x, y, width, height, fill_color, outline_thickness, outline_color, isVisible)
+        number = self.internals_neednolook.canvas.create_rectangle(x, y, x + width, y + height, fill=fill_color, width=outline_thickness, outline=outline_color, state=tkinter.NORMAL if isVisible else tkinter.HIDDEN)
+        newInfo = self.internals_neednolook.RectangleInfo(number, x, y, width, height, fill_color, outline_thickness, outline_color, isVisible)
 
-        self.internals얘는안봐도돼요.objectInfos_list.insert(0, newInfo)
-        self.internals얘는안봐도돼요.objectInfos_dict[number] = newInfo
+        self.internals_neednolook.objectInfos_list.insert(0, newInfo)
+        self.internals_neednolook.objectInfos_dict[number] = newInfo
 
         return number
 
@@ -210,11 +210,11 @@ class Window:
         if outline_thickness < 0:
             outline_thickness = 0
 
-        number = self.internals얘는안봐도돼요.canvas.create_oval(x, y, x + width, y + height, fill=fill_color, width=outline_thickness, outline=outline_color, state=tkinter.NORMAL if isVisible else tkinter.HIDDEN)
-        newInfo = self.internals얘는안봐도돼요.OvalInfo(number, x, y, width, height, fill_color, outline_thickness, outline_color, isVisible)
+        number = self.internals_neednolook.canvas.create_oval(x, y, x + width, y + height, fill=fill_color, width=outline_thickness, outline=outline_color, state=tkinter.NORMAL if isVisible else tkinter.HIDDEN)
+        newInfo = self.internals_neednolook.OvalInfo(number, x, y, width, height, fill_color, outline_thickness, outline_color, isVisible)
 
-        self.internals얘는안봐도돼요.objectInfos_list.insert(0, newInfo)
-        self.internals얘는안봐도돼요.objectInfos_dict[number] = newInfo
+        self.internals_neednolook.objectInfos_list.insert(0, newInfo)
+        self.internals_neednolook.objectInfos_dict[number] = newInfo
 
         return number
 
@@ -235,12 +235,12 @@ class Window:
         '''
 
         # ☆ 해당 파일을 처음 사용하는 경우 읽어 와 저장해 둠. 이미 읽은 적이 있는 경우 저장해 둔 것을 재사용
-        if not filename in self.internals얘는안봐도돼요.imagesFromFiles:
+        if not filename in self.internals_neednolook.imagesFromFiles:
             img = tkinter.PhotoImage(file=filename)
-            self.internals얘는안봐도돼요.imagesFromFiles[filename] = img
-            self.internals얘는안봐도돼요.images[(filename, img.width(), img.height())] = img
+            self.internals_neednolook.imagesFromFiles[filename] = img
+            self.internals_neednolook.images[(filename, img.width(), img.height())] = img
         else:
-            img = self.internals얘는안봐도돼요.imagesFromFiles[filename]
+            img = self.internals_neednolook.imagesFromFiles[filename]
 
         # ☆ 너비 또는 높이를 직접 지정하지 않은 경우 원본 그림의 것을 사용
         if new_width == None:
@@ -252,7 +252,7 @@ class Window:
         tag_img = (filename, new_width, new_height)
 
         # ☆ 해당 크기의 그림을 저장해 두지 않았다면 새로 만들어 저장해 둠
-        if not tag_img in self.internals얘는안봐도돼요.images:
+        if not tag_img in self.internals_neednolook.images:
             org_width = img.width()
             org_height = img.height()
 
@@ -263,17 +263,17 @@ class Window:
             else:
                 img = img.zoom(new_width, new_height).subsample(org_width, org_height)
                 
-            self.internals얘는안봐도돼요.images[tag_img] = img
+            self.internals_neednolook.images[tag_img] = img
 
         # ☆ 해당 크기의 그림을 이전에 저장해 두었다면 가져와서 사용함
         else:
-            img = self.internals얘는안봐도돼요.images[tag_img]
+            img = self.internals_neednolook.images[tag_img]
         
-        number = self.internals얘는안봐도돼요.canvas.create_image(x, y, anchor=tkinter.NW, image=img, state=tkinter.NORMAL if isVisible else tkinter.HIDDEN)
-        newInfo = self.internals얘는안봐도돼요.ImageInfo(number, x, y, filename, img, isVisible)
+        number = self.internals_neednolook.canvas.create_image(x, y, anchor=tkinter.NW, image=img, state=tkinter.NORMAL if isVisible else tkinter.HIDDEN)
+        newInfo = self.internals_neednolook.ImageInfo(number, x, y, filename, img, isVisible)
 
-        self.internals얘는안봐도돼요.objectInfos_list.insert(0, newInfo)
-        self.internals얘는안봐도돼요.objectInfos_dict[number] = newInfo
+        self.internals_neednolook.objectInfos_list.insert(0, newInfo)
+        self.internals_neednolook.objectInfos_dict[number] = newInfo
 
         return number
 
@@ -301,11 +301,11 @@ class Window:
         > 'nw'를 고른다면 텍스트의 x, y좌표는 그 텍스트의 좌상단 좌표로 간주돼요
         '''
 
-        number = self.internals얘는안봐도돼요.canvas.create_text(x, y, width=width, text=text, fill=fill_color, anchor=anchor, state=tkinter.NORMAL if isVisible else tkinter.HIDDEN)
-        newInfo = self.internals얘는안봐도돼요.TextInfo(number, x, y, width, text, fill_color, anchor, isVisible)
+        number = self.internals_neednolook.canvas.create_text(x, y, width=width, text=text, fill=fill_color, anchor=anchor, state=tkinter.NORMAL if isVisible else tkinter.HIDDEN)
+        newInfo = self.internals_neednolook.TextInfo(number, x, y, width, text, fill_color, anchor, isVisible)
 
-        self.internals얘는안봐도돼요.objectInfos_list.insert(0, newInfo)
-        self.internals얘는안봐도돼요.objectInfos_dict[number] = newInfo
+        self.internals_neednolook.objectInfos_list.insert(0, newInfo)
+        self.internals_neednolook.objectInfos_dict[number] = newInfo
 
         return number
 
@@ -317,7 +317,7 @@ class Window:
         number: 제거할 요소의 일련번호
         '''
         
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         # ☆ 실제 제거 작업은 w.update() 종료 이후 시점에 함
         info.isMarkedForDelete = True
@@ -332,7 +332,7 @@ class Window:
         new_x, new_y: 새 위치
         '''
                 
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         if new_x == None:
             new_x = info.x
@@ -358,7 +358,7 @@ class Window:
         new_outline_thickness: 새 외곽선 두께(그림과 텍스트에는 적용되지 않아요. 0보다 작은 경우 0으로 간주해요)
         '''
 
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         if new_outline_thickness == None:
             new_outline_thickness = info.outline_thickness
@@ -398,7 +398,7 @@ class Window:
         > '투명 색'을 쓰고 싶을 때는 ''를 적으면 돼요
         '''
 
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         # ☆ 실제 변경 작업은 w.update() 종료 이후 시점에 함
         if new_fill_color != None and info.fill_color != new_fill_color:
@@ -417,7 +417,7 @@ class Window:
         number: 보여주기 시작할 요소의 일련번호
         '''
 
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         # ☆ 실제 변경 작업은 w.update() 종료 이후 시점에 함
         if info.isVisible == False:
@@ -432,7 +432,7 @@ class Window:
         number: 안 보여주기 시작할 요소의 일련번호
         '''
 
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         # ☆ 실제 변경 작업은 w.update() 종료 이후 시점에 함
         if info.isVisible == True:
@@ -448,14 +448,14 @@ class Window:
         number: 맨 앞으로 내어 보여줄 요소의 일련번호
         '''
 
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         # ☆ Window.getTopObjectAt() 등에서 활용하는 list는 즉시 갱신
-        self.internals얘는안봐도돼요.objectInfos_list.remove(info)
-        self.internals얘는안봐도돼요.objectInfos_list.insert(0, info)
+        self.internals_neednolook.objectInfos_list.remove(info)
+        self.internals_neednolook.objectInfos_list.insert(0, info)
 
         # ☆ 실제 변경 작업은 w.update() 종료 이후 시점에 함
-        self.internals얘는안봐도돼요.canvas.tag_raise(number)
+        self.internals_neednolook.canvas.tag_raise(number)
         
 
     def lowerObject(self, number):
@@ -466,14 +466,14 @@ class Window:
         number: 맨 뒤로 깔아 보여줄 요소의 일련번호
         '''
 
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         # ☆ Window.getTopObjectAt() 등에서 활용하는 list는 즉시 갱신
-        self.internals얘는안봐도돼요.objectInfos_list.remove(info)
-        self.internals얘는안봐도돼요.objectInfos_list.append(info)
+        self.internals_neednolook.objectInfos_list.remove(info)
+        self.internals_neednolook.objectInfos_list.append(info)
    
         # ☆ 실제 변경 작업은 w.update() 종료 이후 시점에 함
-        self.internals얘는안봐도돼요.canvas.tag_lower(number)
+        self.internals_neednolook.canvas.tag_lower(number)
         
 
     def setImage(self, number, new_filename, new_width=None, new_height=None):
@@ -490,12 +490,12 @@ class Window:
         '''
 
         # ☆ 해당 파일을 처음 사용하는 경우 읽어 와 저장해 둠. 이미 읽은 적이 있는 경우 저장해 둔 것을 재사용
-        if not new_filename in self.internals얘는안봐도돼요.imagesFromFiles:
+        if not new_filename in self.internals_neednolook.imagesFromFiles:
             new_img = tkinter.PhotoImage(file=new_filename)
-            self.internals얘는안봐도돼요.imagesFromFiles[new_filename] = new_img
-            self.internals얘는안봐도돼요.images[(new_filename, new_img.width(), new_img.height())] = new_img
+            self.internals_neednolook.imagesFromFiles[new_filename] = new_img
+            self.internals_neednolook.images[(new_filename, new_img.width(), new_img.height())] = new_img
         else:
-            new_img = self.internals얘는안봐도돼요.imagesFromFiles[new_filename]
+            new_img = self.internals_neednolook.imagesFromFiles[new_filename]
 
         # ☆ 너비 또는 높이를 직접 지정하지 않은 경우 원본 그림의 것을 사용
         if new_width == None:
@@ -507,7 +507,7 @@ class Window:
         tag_img = (new_filename, new_width, new_height)
 
         # ☆ 해당 크기의 그림을 저장해 두지 않았다면 새로 만들어 저장해 둠
-        if not tag_img in self.internals얘는안봐도돼요.images:
+        if not tag_img in self.internals_neednolook.images:
             org_width = new_img.width()
             org_height = new_img.height()
 
@@ -518,13 +518,13 @@ class Window:
             else:
                 new_img = new_img.zoom(new_width, new_height).subsample(org_width, org_height)
                 
-            self.internals얘는안봐도돼요.images[tag_img] = new_img
+            self.internals_neednolook.images[tag_img] = new_img
 
         # ☆ 해당 크기의 그림을 이전에 저장해 두었다면 가져와서 사용함
         else:
-            new_img = self.internals얘는안봐도돼요.images[tag_img]
+            new_img = self.internals_neednolook.images[tag_img]
 
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         # ☆ 실제 변경 작업은 w.update() 종료 이후 시점에 함
         if info.img != new_img:
@@ -546,7 +546,7 @@ class Window:
         number: 변경할 텍스트의 일련번호
         new_filename: 새로 적용할 글자들
         '''
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         # ☆ 실제 변경 작업은 w.update() 종료 이후 시점에 함
         if info.text != new_text:
@@ -565,7 +565,7 @@ class Window:
         > 동서남북 같은 느낌으로, 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw', 그리고 'center' 중에 고를 수 있어요
         > 'nw'를 고른다면 텍스트의 x, y좌표는 그 텍스트의 좌상단 좌표로 간주돼요
         '''
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         # ☆ 실제 변경 작업은 w.update() 종료 이후 시점에 함
         if info.anchor != new_anchor:
@@ -584,7 +584,7 @@ class Window:
         return값: 해당 요소의 x, y 값
         '''
 
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         return info.x, info.y
 
@@ -600,7 +600,7 @@ class Window:
         return값: 해당 요소의 width, height 값
         '''
 
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         return info.width, info.height
 
@@ -614,7 +614,7 @@ class Window:
         return값: 해당 요소의 '칠할 색상' 값(해당 요소가 그림인 경우 어떤 값이 나올지 몰라요)
         '''
 
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         return info.fill_color
 
@@ -630,7 +630,7 @@ class Window:
         return값: 해당 요소의 외곽선 두께, 색상 값(해당 요소가 그림 또는 텍스트인 경우 어떤 값이 나올지 몰라요)
         '''
 
-        info = self.internals얘는안봐도돼요.objectInfos_dict[number]
+        info = self.internals_neednolook.objectInfos_dict[number]
 
         return info.outline_thickness, info.outline_color
 
@@ -650,7 +650,7 @@ class Window:
         > 텍스트는 선택되지 않아요
         '''
 
-        for info in self.internals얘는안봐도돼요.objectInfos_list:
+        for info in self.internals_neednolook.objectInfos_list:
             if info.hitTest(x, y):
                 return info.number
 
@@ -673,7 +673,7 @@ class Window:
         '''
         result = []
 
-        for info in self.internals얘는안봐도돼요.objectInfos_list:
+        for info in self.internals_neednolook.objectInfos_list:
             if info.hitTest(x, y):
                 result.append(info.number)
 
@@ -1050,11 +1050,11 @@ class Window:
                     print(event)
 
             
-        self.internals얘는안봐도돼요 = Internals(width, height, printKeysyms, printMouseButtonIdxs, isDebugMode)
+        self.internals_neednolook = Internals(width, height, printKeysyms, printMouseButtonIdxs, isDebugMode)
 
-        self.internals얘는안봐도돼요.ObjectInfo.canvas = self.internals얘는안봐도돼요.canvas
-        self.internals얘는안봐도돼요.ImageInfo.images = self.internals얘는안봐도돼요.images
-        self.internals얘는안봐도돼요.ImageInfo.imagesFromFiles = self.internals얘는안봐도돼요.imagesFromFiles
+        self.internals_neednolook.ObjectInfo.canvas = self.internals_neednolook.canvas
+        self.internals_neednolook.ImageInfo.images = self.internals_neednolook.images
+        self.internals_neednolook.ImageInfo.imagesFromFiles = self.internals_neednolook.imagesFromFiles
         
         self.keys = Internals.Keys()
 

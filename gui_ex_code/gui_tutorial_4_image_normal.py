@@ -12,8 +12,8 @@ w = gui.Window('눌러보세요', 265, 265)
 
 
 def initialize(timestamp):
-    w.data.filename_normal = 'button.png'
-    w.data.filename_pressed = 'button_pressed.png'
+    w.data.filename_normal = 'C:/Users/SIWPARK/Desktop/magic-i_python_team/gui_ex_code/button.png'
+    w.data.filename_pressed = 'C:/Users/SIWPARK/Desktop/magic-i_python_team/gui_ex_code/button_pressed.png'
 
     w.data.number = w.newImage(0, 0, w.data.filename_normal)
 
@@ -32,7 +32,10 @@ def update(timestamp):
          w.mouse_position_y >= 0 and
          w.mouse_position_y < 265 ):
         w.setImage(w.data.number, w.data.filename_pressed)
-        w.setTitle('눌렀네요')    
+        w.setTitle('눌렀네요')
+    else :
+        w.setImage(w.data.number, w.data.filename_normal)
+        w.setTitle('눌러보세요')
         
 
 w.initialize = initialize

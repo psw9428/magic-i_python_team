@@ -1,0 +1,16 @@
+{
+	"sprite1": {
+		"strength": 10,
+		"health": 100,
+		"name": "sprite1",
+		"width" : 210,
+		"height" : 300
+	},
+	"sprite2": {
+		"strength": 10,
+		"health": 100,
+		"name": "sprite2",
+		"width" : 210,
+		"height" : 300
+	}
+}
