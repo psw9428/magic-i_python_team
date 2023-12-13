@@ -26,6 +26,7 @@ def initialize(timestamp):
 	data.bigsprite = []
 	data.bigsprite.append(w.newImage(20, 10, data.sprite_png[1], int(687), int(652), False))
 	data.bigsprite.append(w.newImage(500, 10, data.sprite_png[1], int(687), int(652), False))
+	w.lowerObject(w.newImage(0,0, cwd + '/src/res/background.png', 1024, 766, True))
 	data.mousetxt = w.newText(20, 20, 150, '마우스 위치 : ', anchor='nw')
 	data.cooltime = None
 
