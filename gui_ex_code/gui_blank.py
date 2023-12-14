@@ -29,10 +29,56 @@ def initialize(timestamp):
 	w.lowerObject(w.newImage(0,0, cwd + '/src/res/background.png', 1024, 766, True))
 	data.mousetxt = w.newText(20, 20, 150, '마우스 위치 : ', anchor='nw')
 	data.cooltime = None
+	
+	w.resizeObject(data.sprite[0], int(210 / 2), int(300 / 2), 10)
+	w.recolorObject(data.sprite[0], '', '#FF0000')
 
+
+def next_rgb(rgb) :
+	rgb = rgb[1:]
+	tmp = list(rgb)
+	if (rgb[0:2] == 'FF') :
+		if (rgb[4:6] != '00') :
+			ttt = int(rgb[4:6], 16)
+			tmp[4] = format(ttt - 1, '02X')[0]
+			tmp[5] = format(ttt - 1, '02X')[1]
+		if (rgb[2:4] != 'FF') :
+			ttt = int(rgb[2:4], 16)
+			tmp[2] = format(ttt + 1, '02X')[0]
+			tmp[3] = format(ttt + 1, '02X')[1]
+		else :
+			tmp[1] = 'E'
+	elif (rgb[2:4] == 'FF') :
+		if (rgb[0:2] != '00') :
+			ttt = int(rgb[0:2], 16)
+			tmp[0] = format(ttt - 1, '02X')[0]
+			tmp[1] = format(ttt - 1, '02X')[1]
+		elif (rgb[4:6] != 'FF') :
+			ttt = int(rgb[4:6], 16)
+			tmp[4] = format(ttt + 1, '02X')[0]
+			tmp[5] = format(ttt + 1, '02X')[1]
+		else :
+			tmp[3] = 'E'
+	elif (rgb[4:6] == 'FF') :
+		if (rgb[2:4] != '00') :
+			ttt = int(rgb[2:4], 16)
+			tmp[2] = format(ttt - 1, '02X')[0]
+			tmp[3] = format(ttt - 1, '02X')[1]
+		elif (rgb[0:2] != 'FF') :
+			ttt = int(rgb[0:2], 16)
+			tmp[0] = format(ttt + 1, '02X')[0]
+			tmp[1] = format(ttt + 1, '02X')[1]
+	return '#' + ''.join(tmp)
+	
+	
 
 def update(timestamp):
 	w.setText(data.mousetxt, '마우스 위치 : ' + str(w.mouse_position_x) + ', ' + str(w.mouse_position_y))
+	a, b = w.getOutlineInfo(data.sprite[0])
+	rgb = next_rgb(b)
+	print(rgb)
+	w.recolorObject(data.sprite[0], '', rgb)
+		
 		
 	if w.mouse_buttons[1] :
 		data.cooltime = timestamp
