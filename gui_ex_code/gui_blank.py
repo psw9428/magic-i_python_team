@@ -16,6 +16,7 @@ w = gui.Window('test', 1024, 600)
 cwd = str(os.getcwd()).replace('\\', '/')
 data = w.data
 
+
 def initialize(timestamp):
 	with open(cwd + '/src/json/test.json', 'r') as f :
 		data.character = dict(json.load(f))
@@ -27,11 +28,12 @@ def initialize(timestamp):
 	data.bigsprite.append(w.newImage(20, 10, data.sprite_png[1], int(687), int(652), False))
 	data.bigsprite.append(w.newImage(500, 10, data.sprite_png[1], int(687), int(652), False))
 	w.lowerObject(w.newImage(0,0, cwd + '/src/res/background.png', 1024, 766, True))
-	data.mousetxt = w.newText(20, 20, 150, '마우스 위치 : ', anchor='nw')
+	data.mousetxt = w.newText(20, 20, 150, '마우스 위치 : ', anchor='nw', fill_color='#FF0000')
 	data.cooltime = None
 	
 	w.resizeObject(data.sprite[0], int(210 / 2), int(300 / 2), 10)
 	w.recolorObject(data.sprite[0], '', '#FF0000')
+	data.rgb = '#FF0000'
 
 
 def next_rgb(rgb) :
@@ -40,44 +42,43 @@ def next_rgb(rgb) :
 	if (rgb[0:2] == 'FF') :
 		if (rgb[4:6] != '00') :
 			ttt = int(rgb[4:6], 16)
-			tmp[4] = format(ttt - 1, '02X')[0]
-			tmp[5] = format(ttt - 1, '02X')[1]
+			tmp[4] = format(ttt - 3, '02X')[0]
+			tmp[5] = format(ttt - 3, '02X')[1]
 		if (rgb[2:4] != 'FF') :
 			ttt = int(rgb[2:4], 16)
-			tmp[2] = format(ttt + 1, '02X')[0]
-			tmp[3] = format(ttt + 1, '02X')[1]
+			tmp[2] = format(ttt + 3, '02X')[0]
+			tmp[3] = format(ttt + 3, '02X')[1]
 		else :
-			tmp[1] = 'E'
+			tmp[1] = 'A'
 	elif (rgb[2:4] == 'FF') :
 		if (rgb[0:2] != '00') :
 			ttt = int(rgb[0:2], 16)
-			tmp[0] = format(ttt - 1, '02X')[0]
-			tmp[1] = format(ttt - 1, '02X')[1]
+			tmp[0] = format(ttt - 5, '02X')[0]
+			tmp[1] = format(ttt - 5, '02X')[1]
 		elif (rgb[4:6] != 'FF') :
 			ttt = int(rgb[4:6], 16)
-			tmp[4] = format(ttt + 1, '02X')[0]
-			tmp[5] = format(ttt + 1, '02X')[1]
+			tmp[4] = format(ttt + 5, '02X')[0]
+			tmp[5] = format(ttt + 5, '02X')[1]
 		else :
-			tmp[3] = 'E'
+			tmp[3] = 'A'
 	elif (rgb[4:6] == 'FF') :
 		if (rgb[2:4] != '00') :
 			ttt = int(rgb[2:4], 16)
-			tmp[2] = format(ttt - 1, '02X')[0]
-			tmp[3] = format(ttt - 1, '02X')[1]
+			tmp[2] = format(ttt - 5, '02X')[0]
+			tmp[3] = format(ttt - 5, '02X')[1]
 		elif (rgb[0:2] != 'FF') :
 			ttt = int(rgb[0:2], 16)
-			tmp[0] = format(ttt + 1, '02X')[0]
-			tmp[1] = format(ttt + 1, '02X')[1]
+			tmp[0] = format(ttt + 5, '02X')[0]
+			tmp[1] = format(ttt + 5, '02X')[1]
 	return '#' + ''.join(tmp)
 	
 	
 
 def update(timestamp):
 	w.setText(data.mousetxt, '마우스 위치 : ' + str(w.mouse_position_x) + ', ' + str(w.mouse_position_y))
-	a, b = w.getOutlineInfo(data.sprite[0])
-	rgb = next_rgb(b)
-	print(rgb)
-	w.recolorObject(data.sprite[0], '', rgb)
+	data.rgb = next_rgb(data.rgb)
+	print(data.rgb)
+	w.recolorObject(data.mousetxt, data.rgb, data.rgb)
 		
 		
 	if w.mouse_buttons[1] :
