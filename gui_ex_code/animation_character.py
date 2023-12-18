@@ -13,6 +13,7 @@ import gui_core as gui
 import os
 
 w = gui.Window('test', 1024, 600)
+w.internals_neednolook.master.configure(bg='#000000')
 cwd = str(os.getcwd()).replace('\\', '/')
 data = w.data
 
@@ -27,6 +28,7 @@ def update(timestamp):
 	global num
 	w.setImage(data.sprite, cwd + '/src/res/Dead' + str((num % 6) + 1) + '.png')
 	num += 1
+	time.sleep(0.1)
 
 w.initialize = initialize
 w.update = update

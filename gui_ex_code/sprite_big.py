@@ -12,7 +12,7 @@ import json
 import gui_core as gui
 import os
 
-w = gui.Window('test', 1024, 720)
+w = gui.Window('test', 1024, 600)
 cwd = str(os.getcwd()).replace('\\', '/')
 data = w.data
 

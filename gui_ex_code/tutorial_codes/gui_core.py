@@ -722,7 +722,7 @@ class Window:
                 self_internals.frame.grid()
 
                 # Canvas object(화면 전체를 차지하며 다른 요소들을 배치할 요소. 마우스 입력의 대상)
-                self_internals.canvas = tkinter.Canvas(self_internals.frame, width=width, height=height, highlightthickness=0, bg='black')
+                self_internals.canvas = tkinter.Canvas(self_internals.frame, width=width, height=height, highlightthickness=0, bg='white')
                 self_internals.canvas.bind('<Button>', self_internals.mousePress)
                 self_internals.canvas.bind('<ButtonRelease>', self_internals.mouseRelease)
                 if self_internals.isDebugMode:
