@@ -96,7 +96,8 @@ def initialize(timestamp) :
 
 
 def update(timestamp) :
-    data.start_btn.in_loop()
+    if (data.start_btn.in_loop()) :
+        w.stop()
 
 
 w.initialize = initialize
