@@ -1,5 +1,6 @@
 import gui_core as gui
 import os
+import winsound
 
 window_width = 1280
 window_height = 720
@@ -34,7 +35,7 @@ class btn_class :
 
 
 class scene_class :
-    def __init__(self, dir, num) :
+    def __init__(self, dir, num, last_delay = None) :
         self.dir = dir
         self.num = num
         self.idx = 0
@@ -43,6 +44,7 @@ class scene_class :
         self.img_list = []
         self.flag = False
         self.delay_sec = 0
+        self.last_delay = last_delay
         for i in range(0, num) :
             self.img_list.append(w.newImage(0, 0, dir+str(i+1)+'.png', window_width, window_height, False))
     
@@ -56,16 +58,22 @@ class scene_class :
         #     return
         if (self.flag == False) :
             w.showObject(self.img_list[self.idx])
+            if (self.idx != 0) :
+                w.hideObject(self.img_list[self.idx - 1])
             self.flag = True
         if (self.tmp + self.delay_sec > timestamp) :
             return
-        if (self.flag == True) :
-            w.hideObject(self.img_list[self.idx])
-            self.flag = False
+        # if (self.flag == True) :
+        #     w.hideObject(self.img_list[self.idx])
+        #     self.flag = False
         # if (self.tmp + 2.5 > timestamp) :
         #     return
         self.idx += 1
+        self.flag = False
         if (self.idx == self.num) :
+            if (self.last_delay != None) :
+                gui.time.sleep(self.last_delay)
+            w.hideObject(self.img_list[self.idx - 1])
             w.update = update
         self.tmp = gui.time.perf_counter()
 
@@ -89,13 +97,14 @@ def main_screen() :
 def initialize(timestamp) :
     data.game_status = 0
     data.flag = False
-    game_intro = scene_class(cwd + '/src/res/intro_logo_screen', 1)
-    game_intro.scene_func(4)
+    game_intro = scene_class(cwd + '/src/res/intro/intro_logo', 21, 2)
+    winsound.PlaySound(cwd + '/src/res/bgm/main_bgm.wav', winsound.SND_ASYNC)
     data.start_btn = btn_class(cwd + '/src/res/button/start_btn', 500, 450, 220, 70)
-    data.start_btn.show()
+    game_intro.scene_func(0.1)
 
 
 def update(timestamp) :
+    data.start_btn.show()
     if (data.start_btn.in_loop()) :
         w.stop()
 
