@@ -37,7 +37,7 @@ class stageOne:
 		for i in info_speed:
 			for char in self.character:
 				if info_speed[i] == char.ID:
-					self.turn(i))
+					self.turn(i)
 					if self.character[0] == None and self.character[1] == None:
 						#game over.
 						w.stop()
