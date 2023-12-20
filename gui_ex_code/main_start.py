@@ -270,7 +270,7 @@ def update(timestamp) :
             data.game_status = story_scene
             scene_class(cwd+'/src/res/scene/intro_scene', 11, 3).scene_func(2)
     if (data.game_status == 1) :
-        
+        pass
 
 
 
