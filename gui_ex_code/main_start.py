@@ -149,7 +149,7 @@ class sprite :
 		self.skill = []
 		self.onmouse = False
 		self.skill_pos = [(400, 515), (480, 515), (560, 515), (640, 515)]
-		self.info_txt = w.newText(500, 500, 500, '', 'white', 'nw', False)
+		self.info_txt = w.newText(800, 515, 500, '', 'white', 'nw', False)
 		self.HP_gray = w.newRectangle(0, 0, 100, 20, 'gray', 1, 'white', False)
 		self.HP_red = w.newRectangle(0, 0, 100, 20, 'red', 1, 'white', False)
 		self.stress_back = w.newRectangle(0, 0, 100, 20, 'black', 1, 'white', False)
@@ -167,7 +167,13 @@ class sprite :
 		print(self.skill)
 
 	def display_info(self) :
-		pass
+		info_str = '이름 : ' + self.name +'\n\n'
+		info_str += '체력 : ' + str(self.HP) + '/' + str(self.MAXHP) + '\n'
+		info_str += '스트레스 : ' + str(self.stress) + '/200\n'
+		info_str += '회피율 : ' + str(self.miss) + '\n'
+		w.setText(self.info_txt, info_str)
+		w.raiseObject(self.info_txt)
+		w.showObject(self.info_txt)
 
 	def show(self) :
 		w.raiseObject(self.img)
@@ -183,6 +189,7 @@ class sprite :
 		self.show_status = True
 
 	def hide(self) :
+		w.hideObject(self.info_txt)
 		w.hideObject(self.img)
 		w.hideObject(self.HP_gray)
 		w.hideObject(self.HP_red)
@@ -234,10 +241,13 @@ class sprite :
 			w.raiseObject(self.shadow)
 			w.setImage(self.shadow, cwd+'/src/res/shadow.png', self.width, self.height)
 			w.showObject(self.shadow)
+			self.display_info()
 			self.show()
 			if (w.mouse_buttons[1]) :
+				w.hideObject(self.shadow)
 				return True
 		else :
+			w.hideObject(self.info_txt)
 			w.hideObject(self.shadow)
 		return False
 	
@@ -251,7 +261,6 @@ class sprite :
 		if (self.HP <= 0) :
 			self.HP = 0
 		w.resizeObject(self.HP_red, int((self.HP / self.MAXHP) * 100), 20, 1)
-		print(self.HP)
 	
 	def set_stress(self, stress) :
 		self.stress = stress
@@ -268,7 +277,7 @@ class sprite :
 			self.img = w.newImage(super().x, super().y, cwd+'/src/res/balloon/balloon1_'+direction+'.png', False)
 			self.make_time = gui.time.perf_counter()
 	class skill_class :
-		def __init__(self, name, hit, damage, possible, otherEffect, critical, crit_damage) :
+		def __init__(self, name, damage, hit, possible, otherEffect, critical, crit_damage) :
 			self.name = name
 			self.damage = damage
 			self.possible = possible
@@ -300,7 +309,8 @@ class sprite :
 		def display_info(self) :
 			info_str = '      ' + str(self.name) + '\n\n'
 			info_str += "데미지         : " + str(self.damage) + '\n'
-			info_str += "범위   	       : " + str(len(self.possible)) + '\n'
+			info_str += "범위   	     : " + str(len(self.possible)) + '\n'
+			info_str += "명중률          : " + str(self.hit) + '\n'
 			info_str += "크리티컬 확률   : " + str(self.critical) + '\n'
 			info_str += "크리티컬 데미지 : " + str(self.crit_damage) + '\n'
 			# if (self.otherEffect != 0) :
@@ -315,7 +325,7 @@ class sprite :
 			self.poison = []
 			self.bleed = []
 			self.stun = []
-			self.feer = []
+			self.fear = []
 
 	class refuse_class :
 		def __init__(self) :
@@ -341,6 +351,7 @@ def data_setting(src) :
 		#tmp.defense = dic[i]["defense"]
 		tmp.miss = dic[i]["miss"]
 		tmp.img_idx_num = dic[i]["img_idx_num"]
+		tmp.defender = dic[i]["defender"]
 		#tmp.damage = dic[i]["damage"]
 		tmp.HP = dic[i]["HP"]
 		tmp.MAXHP = tmp.HP
@@ -470,9 +481,12 @@ class stageOne:
 		self.turnFirst = True
 		self.speed = []
 		self.stage_img = w.newImage(0, 0, src, window_width, 500, False)
-		self.pos_list = [(150, 200), (300, 200), (650, 200), (800, 200), (950, 200)]
+		self.pos_list = [(150, 200), (300, 200), (650, 200), (850, 200), (1050, 200)]
 		self.status_bar_img = w.newImage(0, 500, cwd+'/src/res/background/status_bar.png', window_width, 220, False)
 		self.mouse_txt = w.newText(20, 20, 100, '',fill_color='white', anchor='nw', isVisible=True)
+		self.log_txt = w.newText(1000, 500, 200, '', 'white', 'nw', False)
+		self.log_str = ''
+		self.mob_time = 0
 
 	def screen_setting(self) :
 		w.showObject(self.stage_img)
@@ -486,25 +500,22 @@ class stageOne:
 
 	def sprite_animation_loop(self, timestamp) :
 		for i in self.character :
+			if (i == None) :
+				continue
 			i.idle_loop(timestamp)
 
-	def select_target(self, timestamp) :
-		self.sprite_animation_loop(timestamp)
-		for i in self.nowSprite.skill :
-			if i.skill_loop(timestamp) :
-				w.hideObject(self.selected_skill.info_txt)
-				i.display_info()
-				self.selected_skill = i
-		for i in self.selected_skill.possible :
-			if self.character[i].target_me_loop(timestamp):
-				self.selected_target = self.character[i]
-				self.do_turn()
-				w.update = self.phase
+	def log_print(self) :
+		w.setText(self.log_txt, self.log_str)
+		w.raiseObject(self.log_txt)
+		w.showObject(self.log_txt)
+		self.log_str = ''
 	
 	def do_turn(self):
 		select = self.selected_skill
 		target = self.selected_target
 
+		print(self.selected_skill.name + ' -> ' + self.selected_target.name)
+		self.log_str += '\n\n' + self.selected_skill.name + ' -> ' + self.selected_target.name + '\n'
 		if select.damage < 0: #이거는 힐 또는 대신맞기
 			if select.otherEffect == HEAL:	#자 여기에서 잠깐 확인 들어가야함
 
@@ -542,21 +553,22 @@ class stageOne:
 
 			elif select.otherEffect == STRESSHEAL: #창만 가지는 유일무의 스킬. 한턴 쉬고 자기 스트레스 힐하기
 				self.nowSprite.stress -= 30
-
-
 				#여기서 약간 휴식하는 모션 넣기 #########################################################################################################
 
 				return #########################################################################################################
 
-
-
 		if 	select.damage >= 0: #이제 주는 데미지일 때
 			if self.nowSprite.name == "창":
+				print('신의 권능 발동')
+				self.log_str += '신의 권능 발동\n'
 				probability = random.randint(1, 100)
-				if probability <= self.nowSprite.hit: #명중하면
+				if probability <= self.selected_skill.hit: #명중하면
+					self.log_str += '명중'
+					print('명중', end='')
 					probability = random.randint(1, 100)
 					if probability <= target.miss: #회피하고
-					
+						self.log_str += '했으나 회피\n'
+						print('했으나 회피')
 
 					#여기서 회피 그림 뙇 뜨고 #########################################################################################################
 					
@@ -565,52 +577,64 @@ class stageOne:
 						return #회피했으니 이후 그 어떤 효과도 안받는다 #########################################################################################################
 					
 					else:
+						self.log_str += '\n'
+						print('')
 						target.HP -= select.damage
-
 						#바로 즉사하는 모션 #########################################################################################################
 						
-						for k, char in enumerate(self.character):
-							if target == char:
-								self.character[k] = None #죽여버리는 코드 #########################################################################################################
+						#for k, char in enumerate(self.character):
+						#	if target == char:
+						#		self.character[k] = None #죽여버리는 코드 #########################################################################################################
 
 						self.nowSprite.stress += 50 #########################################################################################################
-
+						return
 				else:
-					
+					self.log_str += '빗나감\n'
+					print('빗나감')
 					#빗나감 효과 #########################################################################################################
 
 					self.nowSprite.stress += 50
-					return #명중 안하면 빗나감이니 그것도 어떤 효과도 안받는다 #########################################################################################################
-		
-				
+					return #명중 안하면 빗나감이니 그것도 어떤 효과도 안받는다 #########################################################################################################				
 
 
 			if target.defender != None: #맞아주는 애가 있을 때...
+				self.log_str += target.defender.name + '가 대신 맞아줌\n'
+				print(target.defender.name + '가 대신 맞아줌')
 				defended = target
 				target = target.defender #### 유의
 				defended.defender = None #원래 애의 defender를 이제 없애고, 대신 맞아주는 애로 타겟을 바꿈
 			probability = random.randint(1, 100)
 			if probability <= select.hit: #명중하면
+				self.log_str += select.name + '명중'
+				print(select.name + '명중', end='')
 				probability = random.randint(1, 100)
 				if probability <= target.miss: #회피하고
-					
-
+					print('했으나 회피')
+					self.log_str += '했으나 회피\n'
 					#여기서 회피 그림 뙇 뜨고 #########################################################################################################
-
 					return #회피했으니 이후 그 어떤 효과도 안받는다 #########################################################################################################
-
 				else:
 					probability = random.randint(1, 100)
 					if select.critical <= probability: #크리티컬이 뜨면
+						print(select.name + ' 크리티컬!')
+						self.log_str += '크리티컬!\n'
 						doDamage = select.crit_damage
 					else:
+						print()
 						doDamage = select.damage
 
+					print(target.name + '에게 ' + str(doDamage) +'피해를 입힘')
+					self.log_str += target.name + '에게 ' + str(doDamage) +'피해를 입힘\n'
 					target.HP -= doDamage
 					#때려 #########################################################################################################
 			else:
+				print(select.name + '빗나감')
+				self.log_str += '빗나감'
 				#빗나감 #########################################################################################################
 				return #명중 안하면 빗나감이니 그것도 어떤 효과도 안받는다
+
+			if (select.otherEffect == None) :
+				return
 
 			for status in select.otherEffect: #그리고 이제 그냥 데미지 말고 다른 추가적인 효과들이 있나 확인
 
@@ -660,7 +684,7 @@ class stageOne:
 							target.state.bleed[1] = status[2]
 
 
-
+				return
 				if status[0] == FEAR:
 					#########################################################################################################
 					target.state.num *= 7
@@ -688,7 +712,33 @@ class stageOne:
 									self.character[k] = None
 									return
 		return
+	
+	def available_num(self) :
+		tmp = 0
+		for i in self.character :
+			if i != None :
+				tmp += 1
+		return tmp
 
+	def select_target(self, timestamp) :
+		self.sprite_animation_loop(timestamp)
+		for i in self.nowSprite.skill :
+			if i.skill_loop(timestamp) :
+				w.hideObject(self.selected_skill.info_txt)
+				i.display_info()
+				self.selected_skill = i
+		for i in self.selected_skill.possible :
+			if self.character[i] == None :
+				continue
+			if self.character[i].target_me_loop(timestamp):
+				self.selected_target = self.character[i]
+				self.do_turn()
+				self.log_print()
+				self.mob_time = gui.time.perf_counter()
+				if (self.selected_target.HP <= 0) :
+					self.character[self.selected_target.ID] = None
+					self.selected_target.hide()
+				w.update = self.phase
 
 	def phase(self, timestamp): 
 		#self.phaseCount = phaseCount + 1 #페이즈카운트는 페이즈 함수가 받는 숫자인데, 재귀 형태로 실행을 할 예정이다. ex) 1페이즈 이후 2페이즈 돌입 시, phase(1)이 실행.... 이는 페이즈카운터를 2로 맞추는 효과
@@ -701,8 +751,12 @@ class stageOne:
 		#페이즈가 새로고침 될 때마다 원이 눈이 감기듯 그 전부 검정 되지 말고 위 아래로 조금만 검정인 프레임 다음, 완전 검정 프레임, 그리고 다시 위 아래 조금만 검정인 프레임, 그리고 숫자 바뀐 원
 		#이렇게 숫자 바뀌면 디테일적인 면에서 좀 재밌을 듯. 재생시키면 페이즈 카운터가 살아있듯이 눈 깜빡 하니까 숫자가 바뀐거니 
 		#그때 쓰는 변수가 thisphase
+
+		if (self.mob_time + 1.5 > timestamp) :
+			return
 		
-		if (self.phaseFirst) :
+		if (self.phaseFirst or self.nowTurn % self.available_num() == 0) :
+			self.nowTurn = 0
 			speed = []
 			for char in self.character:
 				if char == None: #뒤지면 None이 되버리기 때문에... 얘는 시체야. speed에 넣을 이유가??없다.
@@ -715,16 +769,20 @@ class stageOne:
 		if (self.turnFirst) :
 			if (self.nowSprite != None) :
 				self.nowSprite.skill_hide()
+			
 			self.nowSprite = self.character[self.speed[self.nowTurn][0]]
-			print(self.nowSprite.name)
+			print('\n\n')
+			print(self.nowSprite.name + '의 턴!  HP : ' + str(self.nowSprite.HP))
 			self.nowSprite.set_HP(self.nowSprite.HP)
 			self.nowSprite.set_stress(self.nowSprite.stress)
 			if self.nowSprite.name != "창" and self.nowSprite.name != "방패":
 				self.selected_skill = self.nowSprite.skill[0]
 				self.selected_target = self.character[random.choice([0, 1])]
 				self.do_turn()
+				self.log_print()
 				self.nowTurn += 1
 				self.turnFirst = True
+				self.mob_time = gui.time.perf_counter()
 				return
 
 			else:	

@@ -4,7 +4,7 @@
 		"width" : 48,
 		"height" : 48,
 		"speed" : 6,
-		"miss" : 50,
+		"miss" : 0,
 		"img_idx_num" : 10,
 		"defender" : null,
 		"HP" : 20,
