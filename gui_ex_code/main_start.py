@@ -154,6 +154,7 @@ class sprite :
 		self.HP_red = w.newRectangle(0, 0, 100, 20, 'red', 1, 'white', False)
 		self.stress_back = w.newRectangle(0, 0, 100, 20, 'black', 1, 'white', False)
 		self.stress_bar = w.newRectangle(0, 0, 0, 20, 'white', 1, 'white', False)
+		self.arrow_img = w.newImage(0, 0, cwd + '/src/res/arrow.png', 96, 96, False)
 
 	def print_info(self) :
 		print(self.name)
@@ -174,6 +175,11 @@ class sprite :
 		w.setText(self.info_txt, info_str)
 		w.raiseObject(self.info_txt)
 		w.showObject(self.info_txt)
+
+	def show_arrow(self) :
+		w.moveObject(self.arrow_img, self.x + 10, self.y - 80)
+		w.raiseObject(self.arrow_img)
+		w.showObject(self.arrow_img)
 
 	def show(self) :
 		w.raiseObject(self.img)
@@ -738,6 +744,7 @@ class stageOne:
 				if (self.selected_target.HP <= 0) :
 					self.character[self.selected_target.ID] = None
 					self.selected_target.hide()
+				w.hideObject(self.nowSprite.arrow_img)
 				w.update = self.phase
 
 	def phase(self, timestamp): 
@@ -769,8 +776,11 @@ class stageOne:
 		if (self.turnFirst) :
 			if (self.nowSprite != None) :
 				self.nowSprite.skill_hide()
+				w.hideObject(self.nowSprite.arrow_img)
 			
 			self.nowSprite = self.character[self.speed[self.nowTurn][0]]
+			self.nowSprite.show_arrow()
+
 			print('\n\n')
 			print(self.nowSprite.name + '의 턴!  HP : ' + str(self.nowSprite.HP))
 			self.nowSprite.set_HP(self.nowSprite.HP)
