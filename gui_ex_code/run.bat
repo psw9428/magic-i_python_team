@@ -1,1 +1,1 @@
-python ./gui_blank.py
+python ./main_start.py

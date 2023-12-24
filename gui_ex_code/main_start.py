@@ -136,10 +136,6 @@ class scene_class :
 		if (self.tmp + self.delay_sec > timestamp) :
 			if (w.mouse_buttons[1] == False or self.tmp + 0.2 > timestamp) :
 				return
-		# if (self.idx == 0) :
-		#     w.showObject(self.img)
-		# elif (self.idx != self.num) :
-		#     w.setImage(self.img, self.dir+str(self.idx+1)+'.png')
 		self.idx += 1
 		if (self.idx == self.num + 1) :
 			if(self.last_delay != None) :
@@ -169,7 +165,6 @@ class sprite :
 		self.img_idx_num = 4
 		self.show_status = False
 		self.src = cwd + '/src/res/sprite/' + self.name + '1.png'
-		print(self.src)
 		self.img = w.newImage(self.x, self.y, self.src, 48, 48, False)
 		self.tmp = 0
 		self.shadow = w.newImage(self.x, self.y, cwd+'/src/res/shadow.png', 48, 48, False)
@@ -603,7 +598,6 @@ def initialize(timestamp) :
 		200399 : "회광반조", 999999 : "와 샌즈"
 	}
 	data.player_list = data_setting(cwd + '/src/json/player.json')
-	data.player_list["방패"].print_info()
 	data.shadow = w.newImage(0, 0, cwd + '/src/res/shadow.png', 48, 48, False)
 	data.start_back = w.newImage(0, 0, cwd + '/src/res/background/start.png', window_width, window_height, False)
 	data.game_status = 0 
@@ -968,6 +962,8 @@ class stageOne:
 
 			elif select.otherEffect == STRESSHEAL: #창만 가지는 유일무의 스킬. 한턴 쉬고 자기 스트레스 힐하기
 				self.nowSprite.stress -= 30
+				if self.nowSprite.stress < 0:
+					self.nowSprite.stress = 0
 				#여기서 약간 휴식하는 모션 넣기 #########################################################################################################
 
 				return #########################################################################################################
@@ -1362,9 +1358,6 @@ class stageOne:
 					w.showObject(i.img)
 					w.raiseObject(i.img)
 				self.turnFirst = False
-				#self.turn(self.speed[self.nowTurn])
-				#print(self.nowSprite.name)
-			
 		
 		for i in self.nowSprite.skill :
 			if i.skill_loop(timestamp) :
