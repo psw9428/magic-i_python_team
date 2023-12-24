@@ -172,8 +172,6 @@ class sprite :
 		self.img = w.newImage(self.x, self.y, self.src, 48, 48, False)
 		self.tmp = 0
 		self.shadow = w.newImage(self.x, self.y, cwd+'/src/res/shadow.png', 48, 48, False)
-		self.balloon = w.newImage(self.x, self.y, cwd+'/src/res/balloon/balloon1_right.png', 192, 96, False)
-		self.balloon_status = False
 		self.says = None
 		self.state = self.state_class()
 		self.collapse = 0
@@ -190,6 +188,9 @@ class sprite :
 		self.arrow_img = w.newImage(0, 0, cwd + '/src/res/arrow.png', 96, 96, False)
 		self.sans_img = w.newImage(0, 0, cwd+'/src/res/sans/sayain1.png', 192, 192, False)
 		self.hit_animation = self.hit_class(self)
+		self.balloon = self.balloon_class()
+		self.balloon = w.newImage(self.x, self.y, cwd+'/src/res/balloon/balloon1_right.png', 192, 96, False)
+		self.balloon_status = False
 
 	def print_info(self) :
 		print(self.name)
@@ -329,8 +330,7 @@ class sprite :
 		w.resizeObject(self.stress_bar, int((self.stress / 200) * 100), 20, 1)
 
 	class balloon_class :
-		def __init__(self, saying, direction = 'right') :
-			super().balloon = self
+		def __init__(self) :
 			self.img = w.newImage(super().x, super().y, cwd+'/src/res/balloon/balloon1_'+direction+'.png', False)
 			self.make_time = gui.time.perf_counter()
 	class skill_class :
@@ -884,12 +884,17 @@ class stageOne:
 									for skill in fix.skill:
 										skill.possible.remove(self.nowSprite.ID) ##########################################################
 								return
-			elif sans:
+			if sans:
 				self.character[0].skill[0].hit = 100
 				self.character[0].stress = 0
 				self.character[0].miss = 100
 				self.character[1].miss = 100
-				
+				###
+				for i in self.character[2:] :
+					if (i.name == "Dead") :
+						continue
+					i.miss = 0
+
 	def do_turn(self):
 		if self.nowSprite.name == "Dead":
 			return
@@ -1275,6 +1280,17 @@ class stageOne:
 			except :
 				self.nowTurn += 1
 				return
+			# if (sans) :
+			# 	self.character[0].stress = 0
+			# 	self.character[1].stress = 0
+			# 	self.character[0].miss = 100
+			# 	self.character[0].hit = 100
+			# 	self.character[1].miss = 100
+			# 	self.character[1].hit = 100
+			# 	for i in self.character[2:] :
+			# 		if (i.name == "Dead") :
+			# 			continue
+			# 		i.miss = 0
 			self.do_check()
 			self.nowSprite.show_arrow()
 			print('\n\n')
