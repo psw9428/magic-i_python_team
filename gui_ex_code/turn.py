@@ -189,7 +189,7 @@ class stageOne:
 	'''	
 	def turn(self, pos): #이거는 개별 턴 함수임
 		#check if who's condition
-		if self.character[pos].state.num % 2 == 0: #중독되면 state.num의 정수가 기본 1이었다가 2를 곱해. 즉, 지금 2로 나누었는데, 나머지가 0이면, 얘는 2를 곱했다는거지. 그러니까. 중독이라는거야.
+		if self.nowSprite.state.num % 2 == 0: #중독되면 state.num의 정수가 기본 1이었다가 2를 곱해. 즉, 지금 2로 나누었는데, 나머지가 0이면, 얘는 2를 곱했다는거지. 그러니까. 중독이라는거야.
 			self.character[pos].state.poison[0] -= 1 #state에는 poison튜플이 있는데 이건 (남은 쳐맞는 턴수, 쳐맞을 때 데미지)의 튜플이지. 턴수 하나 줄이고
 			self.character[pos].HP -= self.character[pos].state.poison[1] #데미지 넣고
 			if self.character[pos].HP <= 0: #데미지 받았는데 죽었네? 수고링
