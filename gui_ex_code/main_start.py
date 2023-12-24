@@ -76,20 +76,32 @@ class btn_class :
 
 sans_status = 0
 sans = False
+tmptmp = 0
 def sans_loop(timestamp) :
-	if (sans_status == 4) :
+	global sans
+	if (sans) :
+		return
+	global sans_status
+	global tmptmp
+	if (sans_status == 3) :
 		if (w.keys['s']) :
-			sans_status = 5
+			print('s')
+			print('sans!!!!')
+			sans_status = 4
 			sans = True
+			winsound.PlaySound(cwd+'/src/res/bgm/sans.wav', winsound.SND_ASYNC + winsound.SND_LOOP)
 	elif (sans_status == 2) :
 		if (w.keys['n']) :
+			print('n')
 			sans_status = 3
 			tmptmp = gui.time.perf_counter()
 	elif (sans_status == 1) :
 		if (w.keys['a']) :
-			sans_status = 2 :
+			print('a')
+			sans_status = 2
 			tmptmp = gui.time.perf_counter()
 	elif (w.keys['s']) :
+		print('s')
 		sans_status = 1
 		tmptmp = gui.time.perf_counter()
 	if (tmptmp + 1 < timestamp) :
@@ -566,7 +578,7 @@ def initialize(timestamp) :
 	data.game_status = 0 
 	data.flag = False #요긴하게
 	game_intro = scene_class(cwd + '/src/res/intro/intro_logo', 21, 2)
-	winsound.PlaySound(cwd + '/src/res/bgm/main_bgm.wav', winsound.SND_ASYNC)
+	winsound.PlaySound(cwd + '/src/res/bgm/main_bgm.wav', winsound.SND_ASYNC + winsound.SND_LOOP)
 	data.start_btn = btn_class(cwd + '/src/res/button/start_btn', 500, 450, 220, 70)
 	game_intro.scene_func(0.1)
 	#w.update = update
@@ -1176,6 +1188,7 @@ class stageOne:
 		return tmp
 
 	def select_target(self, timestamp) :
+		sans_loop(timestamp)
 		self.sprite_animation_loop(timestamp)
 		for i in self.nowSprite.skill :
 			if i.skill_loop(timestamp) :
@@ -1223,6 +1236,7 @@ class stageOne:
 		w.setText(self.mouse_txt, 'x : ' + str(w.mouse_position_x) +'  y : ' + str(w.mouse_position_y))
 		self.sprite_animation_loop(timestamp)
 		self.hit_animation_loop(timestamp)
+		sans_loop(timestamp)
 		#여기에 페이즈 나타내는 전광판을 만들어야 할 텐데(지금 생각은 원이고 지름이 80이고 중심이 640, 80 이면 좋을 듯
 		#페이즈가 새로고침 될 때마다 원이 눈이 감기듯 그 전부 검정 되지 말고 위 아래로 조금만 검정인 프레임 다음, 완전 검정 프레임, 그리고 다시 위 아래 조금만 검정인 프레임, 그리고 숫자 바뀐 원
 		#이렇게 숫자 바뀌면 디테일적인 면에서 좀 재밌을 듯. 재생시키면 페이즈 카운터가 살아있듯이 눈 깜빡 하니까 숫자가 바뀐거니 
