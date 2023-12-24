@@ -188,6 +188,7 @@ class sprite :
 		self.stress_back = w.newRectangle(0, 0, 100, 20, 'black', 1, 'white', False)
 		self.stress_bar = w.newRectangle(0, 0, 0, 20, 'white', 1, 'white', False)
 		self.arrow_img = w.newImage(0, 0, cwd + '/src/res/arrow.png', 96, 96, False)
+		self.sans_img = w.newImage(0, 0, cwd+'/src/res/sans/sayain1.png', 192, 192, False)
 		self.hit_animation = self.hit_class(self)
 
 	def print_info(self) :
@@ -246,6 +247,7 @@ class sprite :
 		w.hideObject(self.HP_red)
 		w.hideObject(self.stress_back)
 		w.hideObject(self.stress_bar)
+		w.hideObject(self.sans_img)
 		self.show_status = False
 	
 	def move(self, xx, yy) :
@@ -283,6 +285,11 @@ class sprite :
 		self.src = cwd + '/src/res/sprite/' + self.name + str(self.img_idx + 1) + '.png'
 		self.width, self.height = 48 * 4, 48 * 4
 		w.setImage(self.img, self.src, self.width, self.height)
+		if (sans and (self.name == "창" or self.name == "방패")) :
+			w.moveObject(self.sans_img, self.x - 20, self.y + 10)
+			w.showObject(self.sans_img)
+			w.setImage(self.sans_img, cwd+'/src/res/sans/say'+str(self.img_idx+1)+'.png', 192, 192)
+			w.raiseObject(self.sans_img)
 		self.img_idx += 1
 		if (self.img_idx % self.img_idx_num == 0) :
 			self.img_idx = 0
