@@ -74,6 +74,7 @@ class btn_class :
 		return False
 
 
+sans_first = True
 sans_status = 0
 sans = False
 tmptmp = 0
@@ -188,9 +189,7 @@ class sprite :
 		self.arrow_img = w.newImage(0, 0, cwd + '/src/res/arrow.png', 96, 96, False)
 		self.sans_img = w.newImage(0, 0, cwd+'/src/res/sans/sayain1.png', 192, 192, False)
 		self.hit_animation = self.hit_class(self)
-		self.balloon = self.balloon_class()
-		self.balloon = w.newImage(self.x, self.y, cwd+'/src/res/balloon/balloon1_right.png', 192, 96, False)
-		self.balloon_status = False
+		self.balloon = None
 
 	def print_info(self) :
 		print(self.name)
@@ -330,9 +329,34 @@ class sprite :
 		w.resizeObject(self.stress_bar, int((self.stress / 200) * 100), 20, 1)
 
 	class balloon_class :
-		def __init__(self) :
-			self.img = w.newImage(super().x, super().y, cwd+'/src/res/balloon/balloon1_'+direction+'.png', False)
-			self.make_time = gui.time.perf_counter()
+		def __init__(self, sprite, say, duration) :
+			self.img = w.newImage(0, 0, cwd+'/src/res/balloon/balloon1_right.png', 192, 96, False)
+			self.sprite = sprite
+			self.say_str = say
+			self.txt = w.newText(0, 0, 150, '', 'white', 'nw', False)
+			self.sayFirst = True
+			self.tmp = 0
+			self.duration = duration
+		
+		def say_loop(self, timestamp) :
+			if (self.sayFirst) :
+				w.moveObject(self.img, self.sprite.x, self.sprite.y-56)
+				w.raiseObject(self.img)
+				w.setText(self.txt, self.say_str)
+				w.moveObject(self.txt, self.sprite.x + 20, self.sprite.y-36)
+				w.raiseObject(self.txt)
+				w.showObject(self.img)
+				w.showObject(self.txt)
+				self.sayFirst = False
+				self.tmp = gui.time.perf_counter()
+				return
+			elif self.tmp + self.duration > timestamp :
+				return
+			w.hideObject(self.img)
+			w.hideObject(self.txt)
+			self.sayFirst = True
+			self.sprite.balloon = None
+
 	class skill_class :
 		def __init__(self, name, damage, hit, possible, otherEffect, critical, crit_damage) :
 			self.name = name
@@ -1235,7 +1259,7 @@ class stageOne:
 		
 	def set_bar(self) :
 		for i in self.character :
-			if (i == None) :
+			if (i.name == "Dead") :
 				continue
 			i.set_HP(i.HP)
 			i.set_stress(i.stress)
@@ -1249,12 +1273,33 @@ class stageOne:
 		self.sprite_animation_loop(timestamp)
 		self.hit_animation_loop(timestamp)
 		sans_loop(timestamp)
+		if (sans) :
+			global sans_first
+			if (sans_first) :
+				for i in self.character[:2] :
+					i.balloon = i.balloon_class(i, random.choice(i.says["awaken"]), 4)
+				sans_first = False
+				self.character[0].stress = 0
+				self.character[1].stress = 0
+				self.character[0].miss = 100
+				self.character[0].skill[0].hit = 100
+				self.character[1].miss = 100
+				self.character[1].hit = 100
+				for i in self.character[2:] :
+					if (i.name == "Dead") :
+						continue
+					i.miss = 0
+		for i in self.character :
+			if (i.name == "Dead") :
+				continue
+			if (i.balloon != None) :
+				i.balloon.say_loop(timestamp)
 		#여기에 페이즈 나타내는 전광판을 만들어야 할 텐데(지금 생각은 원이고 지름이 80이고 중심이 640, 80 이면 좋을 듯
 		#페이즈가 새로고침 될 때마다 원이 눈이 감기듯 그 전부 검정 되지 말고 위 아래로 조금만 검정인 프레임 다음, 완전 검정 프레임, 그리고 다시 위 아래 조금만 검정인 프레임, 그리고 숫자 바뀐 원
 		#이렇게 숫자 바뀌면 디테일적인 면에서 좀 재밌을 듯. 재생시키면 페이즈 카운터가 살아있듯이 눈 깜빡 하니까 숫자가 바뀐거니 
 		#그때 쓰는 변수가 thisphase
 
-		if (self.mob_time + 1.5 > timestamp) :
+		if (self.mob_time + 2 > timestamp) :
 			return
 		
 		if (self.phaseFirst or self.nowTurn == self.available_num()) :
@@ -1280,17 +1325,6 @@ class stageOne:
 			except :
 				self.nowTurn += 1
 				return
-			# if (sans) :
-			# 	self.character[0].stress = 0
-			# 	self.character[1].stress = 0
-			# 	self.character[0].miss = 100
-			# 	self.character[0].hit = 100
-			# 	self.character[1].miss = 100
-			# 	self.character[1].hit = 100
-			# 	for i in self.character[2:] :
-			# 		if (i.name == "Dead") :
-			# 			continue
-			# 		i.miss = 0
 			self.do_check()
 			self.nowSprite.show_arrow()
 			print('\n\n')
