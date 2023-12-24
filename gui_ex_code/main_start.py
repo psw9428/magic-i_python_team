@@ -1242,6 +1242,7 @@ class stageOne:
 				self.nowSprite.set_stress(self.nowSprite.stress)
 				self.mob_time = gui.time.perf_counter()
 				if (self.selected_target.HP <= 0) :
+					self.selected_target.balloon = self.selected_target.balloon_class(self.selected_target, random.choice(self.selected_target.says["death"]), 2)
 					self.character[self.selected_target.ID].name = "Dead"
 					w.setImage(self.selected_target.img, cwd+'/src/res/sprite/Dead.png', 192, 192)
 					w.hideObject(self.selected_target.info_txt)
@@ -1290,8 +1291,8 @@ class stageOne:
 						continue
 					i.miss = 0
 		for i in self.character :
-			if (i.name == "Dead") :
-				continue
+			#if (i.name == "Dead") :
+			#	continue
 			if (i.balloon != None) :
 				i.balloon.say_loop(timestamp)
 		#여기에 페이즈 나타내는 전광판을 만들어야 할 텐데(지금 생각은 원이고 지름이 80이고 중심이 640, 80 이면 좋을 듯
@@ -1350,6 +1351,9 @@ class stageOne:
 				self.turnFirst = True
 				self.mob_time = gui.time.perf_counter()
 				self.set_bar()
+				if (self.nowSprite.name != "Dead") :
+					self.nowSprite.balloon = None
+					self.nowSprite.balloon = self.nowSprite.balloon_class(self.nowSprite, random.choice(self.nowSprite.says["hit"]), 2)
 				return
 
 			else:
